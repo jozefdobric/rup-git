@@ -1,0 +1,30 @@
+<template>
+  
+      
+<pre>
+Mark Ronson feat. Bruno Mars - Uptown Funk (Radio Edit)
+Red Mystery - Jetlands (Ron Flatter & Nick D-Lite Edit)
+Bill Withers & Grover Washington - Just the Two of Us
+M. Ward - Me and My Shadow (feat. Zooey Deschanel)
+Clean Bandit - Rather Be (feat. Jess Glynne) [The Magician Remix]
+</pre>
+      
+<section>
+
+  <input type="text" value.bind="theRow" keyup.trigger="makeSomeParso()" id="theRow">
+  <hr>
+  <input type="text" value.bind="sectionArtist"> (sectionArtist)
+  <input type="text" value.bind="sectionTitle"> (sectionTitle)
+  <input type="text" value.bind="mainArtist"> (mainArtist)
+  <input type="text" value.bind="trackTitle"> (trackTitle)
+  <input type="text" value.bind="remixTitle"> (remixTitle)
+    <fieldset>
+        <label repeat.for="featured of featuredArtists">
+            <input type="text" value.bind="featured.name"> (featuredArtists[${featured.position}])<br>
+        </label>
+    </fieldset>
+
+</section>
+    
+
+</template>
