@@ -1,30 +1,143 @@
 <template>
-  
-      
-<pre>
-Mark Ronson feat. Bruno Mars - Uptown Funk (Radio Edit)
-Red Mystery - Jetlands (Ron Flatter & Nick D-Lite Edit)
-Bill Withers & Grover Washington - Just the Two of Us
-M. Ward - Me and My Shadow (feat. Zooey Deschanel)
-Clean Bandit - Rather Be (feat. Jess Glynne) [The Magician Remix]
-</pre>
-      
-<section>
-
-  <input type="text" value.bind="theRow" keyup.trigger="makeSomeParso()" id="theRow">
-  <hr>
-  <input type="text" value.bind="sectionArtist"> (sectionArtist)
-  <input type="text" value.bind="sectionTitle"> (sectionTitle)
-  <input type="text" value.bind="mainArtist"> (mainArtist)
-  <input type="text" value.bind="trackTitle"> (trackTitle)
-  <input type="text" value.bind="remixTitle"> (remixTitle)
-    <fieldset>
-        <label repeat.for="featured of featuredArtists">
-            <input type="text" value.bind="featured.name"> (featuredArtists[${featured.position}])<br>
-        </label>
-    </fieldset>
-
+    
+<section id="TestMode">
+    <div class="content">
+        <button id="PasteRand" click.trigger="pasteRandomTest()">Paste Random Row</button>
+    </div>
+    <div class="switcher"></div>
 </section>
     
+<!-- -------------------------------------------------------------------------- -->
+    
+<section id="TrackRow">
+
+    <header>
+        <h2>Input Row</h2>
+    </header>
+    
+    <fieldset>
+        <input type="text" id="theRow" placeholder="%artist% - %title%" tabindex="1" value.bind="out.input" keyup.trigger="getSuggestions()" change.trigger="getSuggestions()">
+        <div id="SugButton" if.bind="sgg.isMinimized" click.trigger="showSuggestions(true)">has suggestions</div>
+    </fieldset>
+    
+</section>
+    
+<!-- -------------------------------------------------------------------------- -->
+    
+<section id="SuggestionMessage">
+    <fieldset>
+
+        <div repeat.for="sug of sgg.data">
+        <label class="${sug.isChecked?'':'removed'}">
+            <input type="checkbox" class="sugcheck" checked.bind="sug.isChecked">
+            <i>${sug.caption}:</i>
+            <b>${sug.val}</b>
+        </label>
+        </div>
+
+        <fieldset>
+            <button id="UseSug" click.trigger="insertSuggestions()">use selected</button>
+            <button id="SkipSug" click.trigger="insertSuggestions('skip')">skip</button>
+        </fieldset>
+
+    </fieldset>
+</section>
+    
+<!-- -------------------------------------------------------------------------- -->
+    
+<section class="TrackData">
+    
+    <header>
+        <h2>Titles</h2>
+    </header>
+    
+    <fieldset>
+        <label>
+            <span>Track Title</span><br>
+            <input type="text" tabindex="2" value.bind="out.trackTitle">
+        </label>
+        <label>
+            <span>Version / Remix Title</span><br>
+            <input type="text" value.bind="out.remixTitle">
+        </label>
+        
+    </fieldset>
+    
+</section>
+
+<section class="TrackData">
+    
+    <header>
+        <h2>Competitors</h2>
+    </header>
+    
+    <fieldset>
+        <label>
+            <span>Main Artist</span>
+            <input type="text" value.bind="out.mainArtist"><br>
+        </label>
+        <label>
+            <span>Featured Artist(s)</span>
+            <div repeat.for="feat of out.featArtists">
+                <input type="text" value.bind="feat.val">
+            </div>
+            <button id="AddFARow" click.trigger="addNewRowForFeatured()">add row</button>
+        </label>
+        
+        <span class="moreless" data-more="competitors-extend">
+            <span class="more">Show More</span>
+            <span class="less">Show Less</span>
+        </span>
+        
+        <div id="competitors-extend" style="display:none;">
+            <label>
+                <span>Author</span>
+                <input type="text" value.bind="out.author"><br>
+            </label>
+            <label>
+                <span>Composer</span>
+                <input type="text" value.bind="out.composer"><br>
+            </label>
+        </div>
+        
+        
+    </fieldset>
+    
+</section>
+    
+<!-- -------------------------------------------------------------------------- -->
+
+<section class="FormConfirm">
+    <fieldset>
+        <button id="Complete" click.trigger="getResult()">Get Result</button>
+        <button id="Reset"  click.trigger="reset()">Reset</button>
+    </fieldset>
+</section>
+    
+<!-- -------------------------------------------------------------------------- -->
+
+<script>
+    
+    $(function(){
+        $('#TestMode .switcher').on('click',function(){
+            $('#TestMode .content').slideToggle("fast");
+        });
+        $(".moreless").on('click', function(e){
+            var klik = $(e.currentTarget);
+            var targ = $('#' + klik.attr('data-more') );
+            var more = klik.children(".more");
+            var less = klik.children(".less");
+            var mode = klik.hasClass("on");
+
+            klik.toggleClass("on");
+            targ.slideToggle("fast");
+            more.toggle(mode);
+            less.toggle(!mode);
+
+        });
+    });    
+    
+    
+</script>
 
 </template>

@@ -1,0 +1,140 @@
+<!doctype html>
+<html>
+<head>
+    <title>SplitSongCom</title>
+    <meta charset="utf-8" mapuping="ы">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <link rel="stylesheet" href="../styles/reset.css" media="all">
+    <link rel="stylesheet" href="../styles/design.css" media="all">
+</head>
+<body>
+    
+<section id="TestMode">
+    <div class="content">
+        <button id="PasteRand">Paste Random Row</button>
+    </div>
+    <div class="switcher"></div>
+</section>
+    
+<section id="TrackRow">
+    
+    <header>
+        <h2>Input Row</h2>
+    </header>
+    
+    <fieldset>
+        <input type="text" id="theRow" placeholder="%artist% - %title%" tabindex="1">
+        <div id="SugButton">has suggestions</div>
+    </fieldset>
+    
+    <section id="SuggestionMessage">
+        <fieldset>
+            <label>
+                <input type="checkbox" class="sugcheck" checked="yes">
+                <i>track title:</i>
+                <b>War Song</b>
+            </label><br>
+            <label>
+                <input type="checkbox" class="sugcheck" checked="yes">
+                <i>remix title:</i>
+                <b>Peace Remix</b>
+            </label><br>
+            <br>
+            <label>
+                <input type="checkbox" class="sugcheck" checked="yes">
+                <i>main artist:</i>
+                <b>John Smith</b>
+            </label><br>
+            <label>
+                <input type="checkbox" class="sugcheck" checked="yes">
+                <i>featured artist:</i>
+                <b>Joanna Smith</b>
+            </label><br>
+            <label>
+                <input type="checkbox" class="sugcheck" checked="yes">
+                <i>featured artist:</i>
+                <b>Ioanna Smith</b>
+            </label><br>
+            
+            <fieldset>
+                <button id="UseSug">use selected</button>
+                <button id="SkipSug">skip</button>
+            </fieldset>
+            
+        </fieldset>
+    </section>
+    
+</section>
+    
+<section class="TrackData">
+    
+    <header>
+        <h2>Titles</h2>
+    </header>
+    
+    <fieldset>
+        <label>
+            <span>Track Title</span><br>
+            <input type="text" tabindex="2">
+        </label>
+        <label>
+            <span>Version / Remix Title</span><br>
+            <input type="text">
+        </label>
+        
+    </fieldset>
+    
+</section>
+
+<section class="TrackData">
+    
+    <header>
+        <h2>Competitors</h2>
+    </header>
+    
+    <fieldset>
+        <label>
+            <span>Main Artist</span>
+            <input type="text"><br>
+        </label>
+        <label>
+            <span>Featured Artist(s)</span>
+            <input type="text"><br>
+            <input type="text"><br>
+            <input type="text"><br>
+            <button id="AddFARow">add row</button>
+        </label>
+        
+        <span class="moreless" data-more="competitors-extend">
+            <span class="more">Show More</span>
+            <span class="less">Show Less</span>
+        </span>
+        
+        <div id="competitors-extend" style="display:none;">
+            <label>
+                <span>Author</span>
+                <input type="text"><br>
+            </label>
+            <label>
+                <span>Composer</span>
+                <input type="text"><br>
+            </label>
+        </div>
+        
+        
+    </fieldset>
+    
+</section>
+
+<section class="FormConfirm">
+    <fieldset>
+        <button id="Complete">Reset</button>
+    </fieldset>
+</section>
+
+
+
+<script src="../jquery.js"></script>
+<script src="design.js"></script>
+</body>
+</html>

@@ -1,126 +1,204 @@
 export class TrakoParsoClass {
-
-theRow = 'incoming data';
-
-makeSomeParso() {
     
-    var parsed = TrakoParso(this.theRow);
-    this.sectionArtist  = parsed.sectionArtist;
-    this.sectionTitle   = parsed.sectionTitle;
-    this.mainArtist     = parsed.mainArtist;
-    this.trackTitle     = parsed.trackTitle;
-    this.remixTitle     = parsed.remixTitle;
-    this.featuredArtists= parsed.featuredArtists;
+out = {};
+sgg = {};
+
+constructor() {
+    this.reset();
+    console.log(`zl wrks 0.16.3`);
+}
+
+getSuggestions() {
+    this.sgg = TrakoParsoTri(this.out.input);
+    if (this.sgg.ready) this.showSuggestions(true);
+    else this.showSuggestions(false);
+}
+
+showSuggestions(show) {
+    if (show) {
+        $('#SuggestionMessage').slideDown("fast");
+        this.sgg.isMinimized = false;
+    } else {
+        $('#SuggestionMessage').slideUp("fast");
+        if (this.sgg.ready) this.sgg.isMinimized = true;
+    }    
+}
+
+insertSuggestions(skip) {
+    this.showSuggestions(false);
+    if (skip == 'skip') return false;
+    this.out.featArtists = [];
+    for ( var i in this.sgg.data )
+        if ( this.sgg.data[i].isChecked ) {
+            switch( this.sgg.data[i].code ) {
+                case 'trackTitle':
+                    this.out.trackTitle = this.sgg.data[i].val;
+                break;
+                case 'remixTitle':
+                    this.out.remixTitle = this.sgg.data[i].val;
+                break;
+                case 'mainArtist':
+                    this.out.mainArtist = this.sgg.data[i].val;
+                break;
+                case 'featArtist':
+                    this.out.featArtists.push({'val':this.sgg.data[i].val});
+                break;
+            }
+        }
+}
+
+addNewRowForFeatured() {
+    this.out.featArtists.push({val:''})
+}
+
+getResult() {
+    console.log('Output result:');
+    console.log(this.out);
+    alert('Output was printed in console');
+}
+
+reset() {
+    this.out = {
+        'input':            '',
+        'trackTitle':       '',
+        'remixTitle':       '',
+        'mainArtist':       '',
+        'featArtists':      [
+            {'val':''}
+        ],
+        'author':           '',
+        'composer':         ''
+    };
+    this.sgg = {
+        'ready':        false,
+        'isMinimized':  false,
+        'data':         []
+    };
+    this.showSuggestions(false);
+}
+
+pasteRandomTest() {
+    var testValues = [
+    'Mark Ronson feat. Bruno Mars - Uptown Funk (Radio Edit)',
+    'Red Mystery - Jetlands (Ron Flatter & Nick D-Lite Edit)',
+    'Bill Withers & Grover Washington - Just the Two of Us',
+    'M. Ward - Me and My Shadow (feat. Zooey Deschanel)',
+    'Clean Bandit - Rather Be (feat. Jess Glynne) [The Magician Remix]',
+    'Ana Tijoux - Somos Sur (Feat Shadia Mansour)',
+    'Tove Lo - Stay High ft. Hippie Sabotage.mp3',
+    'Rameses_B_-_Spirit_Walk_Original_Mix_(get-tune.net).mp3',
+    '11_the_bug_-_poison_dart_feat_warrior_queen.mp3'
+    ];
+    this.reset();
+    this.out.input = testValues[Math.floor(Math.random()*testValues.length)];
+    this.getSuggestions();
     
 }
 
-    
 }
 
-function TrakoParso(theRow) {
-    
 
-    var regexCommand;
-    var regexWalls;
-    var regexExcept;
-    var regexResult;
-    var parsed = {};
+
+
+function TrakoParsoTri(inputRow){
+    var captionText = {
+        'trackTitle':'track title',
+        'remixTitle':'remix title',
+        'mainArtist':'main artist',
+        'featArtist':'featured artist'
+    };
+    var rwp = {
+        'div':  '\\W\\-\\W|\\W\\-\\-\\W',   // section divider
+        'ft':   'feat\\.?|ft\\.?',          // feat wall
+        'br':   '\\(|\\)|\\[|\\]',          // brackets
+        'and':  '\\Wand\\W|\\&',            // 'and' wall
+        'eos':  '$'                         // end of string
+    };
+    var prs = {
+        'base':inputRow,
+        'section': {
+            'artist':'',
+            'title':''
+        },
+        'mainArtist':'',
+        'trackTitle':'',
+        'remixTitle':'',
+        'featuredArtists':[]
+    };
     
-    // GET TWO PARTS
-    regexWalls = [
-        '\\W\\-\\W',
-        '\\W\\-\\-\\W'
-    ];
-    regexResult = new RegExp(regexWalls.join('|'));
-    [ parsed.sectionArtist, parsed.sectionTitle ] = theRow.split(regexResult);
+    var suggestion = {
+        'ready':        false,
+        'isMinimized':  false,
+        'data':         []
+    };
     
-    
-    // GET MAIN ARTIST
-    // LOGIC: 
-    // [start] MAIN ARTIST [wall] ...
-    regexWalls = [
-        'feat\\.?', 
-        'ft\\.?',
-        '\\Wand\\W', 
-        '\\&', 
-        '\\(', 
-        '\\)',
-        '\\[', 
-        '\\]',
-        '\\W\\-\\W',
-        '\\W\\-\\-\\W',
-        '$'
-    ];
-    regexCommand = new RegExp( "^.*?(?="+regexWalls.join('|')+")" , "ig");
-    regexResult = regexCommand.exec(theRow);
-    parsed.mainArtist = ( regexResult ? regexResult[0].trim() : '' );
-    
-    
-    // GET TRACK NAME
-    // LOGIC (using tilte part):
-    // [start] TRACK NAME [wall] or [end]
-    regexWalls = [
-        'feat\\.?', 
-        'ft\\.',
-        '\\(', 
-        '\\)',
-        '\\[', 
-        '\\]',
-        '$'
-    ];
-    regexCommand = new RegExp( "^.*?(?="+regexWalls.join('|')+")" , "ig");
-    regexResult = regexCommand.exec(parsed.sectionTitle);
-    parsed.trackTitle = ( regexResult ? regexResult[0].trim() : '' );
+    // step0: clear input    
+    prs.base = prs.base.replace(/_/g," ");
+    prs.base = prs.base.replace(/(\.mp3)$/i,"");
     
     
-    // GET REMIX NAME
-    // LOGIC
-    // ... [brackets][no feat] remix name [brackets] [end]
-    regexWalls = [
-        '\\(', 
-        '\\)',
-        '\\[', 
-        '\\]'
-    ];
-    regexExcept = [
-        'feat\\.?', 
-        'ft\\.'
-    ];    
-    regexCommand = new RegExp( "(?=.*)(?:"+regexWalls.join('|')+")(?!"+regexExcept.join('|')+").*?(?:"+regexWalls.join('|')+").*$" , "ig");
-    regexResult = regexCommand.exec(parsed.sectionTitle);
-    parsed.remixTitle = ( regexResult ? regexResult[0].trim() : '' );
+    // step1: get sections
+    [ prs.section.artist, prs.section.title ] = prs.base.split( RegExp(rwp.div) );
+    if ( !prs.section.title ) return suggestion;
     
     
-    // GET FEATURED
-    regexWalls = [
-        'feat\\.?', 
-        'ft\\.?',
-        '\\Wand\\W', 
-        '\\&', 
-        '\\(', 
-        '\\)',
-        '\\[', 
-        '\\]',
-        '\\W\\-\\W',
-        '\\W\\-\\-\\W',
-        parsed.mainArtist.replace(" ", '\\s'),
-        parsed.trackTitle.replace(" ", '\\s')
-    ];
+    // step2: get mainArtist
+    [prs.mainArtist] = RegExp( "^.*?(?="+[rwp.div,rwp.ft,rwp.br,rwp.and,rwp.eos].join("|")+")" , "ig").exec(prs.base) || [''];
     
-    regexCommand = new RegExp( regexWalls.join('|') );
-    regexResult = theRow.split(regexCommand);
-    parsed.featuredArtists = [];
-    for ( var i in regexResult) {
-        if ( regexResult[i].trim() != '' ) 
-            parsed.featuredArtists.push( {'name':regexResult[i].trim(), 'position':i} );
+    
+    // step3: get track title
+    [prs.trackTitle] = ( prs.section.title ? RegExp( "^.*?(?="+[rwp.ft,rwp.br,rwp.eos].join("|")+")" , "ig").exec(prs.section.title) || [''] : ['']);
+
+    
+    // step4: get remix title
+    [prs.remixTitle] = RegExp( "(?=.*)(?:"+rwp.br+")(?!"+rwp.ft+").*?(?:"+rwp.br+").*$" , "ig").exec(prs.base) || [''];
+    prs.remixTitle = prs.remixTitle.replace(RegExp(rwp.br,"g"),'').trim();
+
+    
+    // step5: get featured
+    if (prs.mainArtist) rwp.artist  = prs.mainArtist.replace(" ", '\\s');
+    if (prs.trackTitle) rwp.title   = prs.trackTitle.replace(" ", '\\s');
+    var unf = prs.base.split( RegExp([rwp.div,rwp.ft,rwp.br,rwp.and,rwp.artist,rwp.title].join("|"), "i" ) );
+    for ( var i in unf ) 
+        if ( unf[i].trim() ) {
+            prs.featuredArtists.push({ 
+                'val':          unf[i].trim().replace(/(remix|edit)$/ig, ''),
+                'caption':      captionText.featArtist,
+                'code':         'featArtist',
+                'isChecked':    true
+            });
+        }
+    
+    
+    // step6:formatting    
+    if( prs.trackTitle ) {
+        suggestion.data.push({
+            'val':          prs.trackTitle,
+            'caption':      captionText.trackTitle,
+            'code':         'trackTitle',
+            'isChecked':    true
+        });
+        suggestion.ready = true;
     }
+    if( prs.remixTitle ) {
+        suggestion.data.push({
+            'val':          prs.remixTitle,
+            'caption':      captionText.remixTitle,
+            'code':         'remixTitle',
+            'isChecked':    true
+        });
+    }
+    if( prs.mainArtist ) {
+        suggestion.data.push({
+            'val':          prs.mainArtist,
+            'caption':      captionText.mainArtist,
+            'code':         'mainArtist',
+            'isChecked':    true
+        });
+        suggestion.ready = true;
+    }
+    for ( var j in prs.featuredArtists ) suggestion.data.push( prs.featuredArtists[j] );
     
-    return parsed;
+    return suggestion;
 
 }
-
-
-
-
-console.log(`zl wrks 0.14`);
-        
